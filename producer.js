@@ -3,7 +3,7 @@ const { Kafka } = require('kafkajs');
 // Initialize Kafka client
 const kafka = new Kafka({
     clientId: 'my-kafka-producer',
-    brokers: ['localhost:9092'], // Replace with your Kafka broker address
+    brokers: ['192.168.50.230:9092'], // Replace with your Kafka broker address
 });
 
 // Create a Kafka producer
@@ -19,7 +19,7 @@ const publishMessage = async () => {
     const topic = 'my-topic'; // Your Kafka topic
     const message = {
         key: 'my-key', // Optional: specify a message key
-        value: 'Hai sapek kontol', // Message content
+        value: 'Sapek kelazzzssakjwdsh wlbfkis7bu   qWKR', // Message content
     };
 
     await producer.send({
