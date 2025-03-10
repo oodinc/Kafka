@@ -1,36 +1,46 @@
 const { Kafka } = require('kafkajs');
+const readline = require('readline');
 
-// Initialize Kafka client
 const kafka = new Kafka({
     clientId: 'my-kafka-producer',
-    brokers: ['192.168.50.230:9092'], // Replace with your Kafka broker address
+    brokers: ['192.168.50.230:9092'], 
 });
 
-// Create a Kafka producer
 const producer = kafka.producer();
+const topic = 'my-topic'; 
 
-// Connect the producer
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+
 const runProducer = async () => {
     await producer.connect();
+    console.log("Kafka Producer connected. Type a message to send, or type 'exit' to quit.");
+    askForInput();
 };
 
-// Publish a message
-const publishMessage = async () => {
-    const topic = 'my-topic'; // Your Kafka topic
-    const message = {
-        key: 'my-key', // Optional: specify a message key
-        value: 'Sapek kelazzzssakjwdsh wlbfkis7bu   qWKR', // Message content
-    };
+const askForInput = () => {
+    rl.question('Enter message: ', async (input) => {
+        if (input.toLowerCase() === 'exit') {
+            console.log('Exiting...');
+            await producer.disconnect();
+            rl.close();
+            process.exit(0);
+        }
 
-    await producer.send({
-        topic,
-        messages: [message],
+        try {
+            await producer.send({
+                topic,
+                messages: [{ key: 'user-input', value: input }],
+            });
+            console.log('Message sent:', input);
+        } catch (err) {
+            console.error('Error sending message:', err);
+        }
+
+        askForInput(); 
     });
 };
 
-// Run the producer
-runProducer()
-    .then(publishMessage)
-    .then(() => console.log('Message published successfully'))
-    .catch((err) => console.error('Error publishing message:', err))
-    .finally(() => producer.disconnect());
+runProducer().catch((err) => console.error('Error starting producer:', err));
